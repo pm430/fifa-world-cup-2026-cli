@@ -29,7 +29,7 @@
 ## 설치
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/fifa-world-cup-2026-cli
+git clone https://github.com/pm430/fifa-world-cup-2026-cli
 cd fifa-world-cup-2026-cli
 python3 -m venv .venv
 source .venv/bin/activate
