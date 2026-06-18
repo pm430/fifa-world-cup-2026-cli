@@ -28,6 +28,37 @@
 
 ## 설치
 
+> 터미널(Terminal / 명령 프롬프트)이 처음이신 분도 아래 순서대로 따라오시면 됩니다.
+
+### 1단계 — 터미널 열기
+
+| 운영체제 | 방법 |
+|---|---|
+| **Mac** | `Cmd + Space` → "Terminal" 검색 → 실행 |
+| **Windows** | `Win + R` → `cmd` 입력 → 확인 |
+
+### 2단계 — Python 설치 확인
+
+터미널에 아래 명령어를 입력하세요.
+
+```bash
+python3 --version
+```
+
+`Python 3.8.x` 이상이 출력되면 다음 단계로 이동하세요.
+
+출력이 없거나 오류가 나면 Python을 먼저 설치해야 합니다.
+- **Mac** → [python.org/downloads](https://www.python.org/downloads/) 에서 다운로드 후 설치
+- **Windows** → [python.org/downloads](https://www.python.org/downloads/) 에서 다운로드. 설치 시 **"Add Python to PATH"** 체크 필수!
+
+> Windows에서 `python3`이 안 되면 `python --version` 을 대신 써보세요.
+
+### 3단계 — 다운로드 및 설치
+
+아래 명령어를 터미널에 한 줄씩 순서대로 입력하세요.
+
+**Mac / Linux**
+
 ```bash
 git clone https://github.com/pm430/fifa-world-cup-2026-cli
 cd fifa-world-cup-2026-cli
@@ -36,7 +67,41 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-API 키 없음. 가입 없음. 그냥 실행하면 됩니다.
+**Windows**
+
+```cmd
+git clone https://github.com/pm430/fifa-world-cup-2026-cli
+cd fifa-world-cup-2026-cli
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+> `git` 명령어가 없다는 오류가 나오면 → [git-scm.com](https://git-scm.com/downloads) 에서 Git 설치 후 다시 시도하세요.
+
+설치가 끝나면 이런 메시지가 보입니다.
+
+```
+Successfully installed click-... requests-... rich-...
+```
+
+API 키 없음. 가입 없음. 이게 전부입니다.
+
+### 4단계 — 데모로 확인
+
+```bash
+python fifa_wc.py watch --demo
+```
+
+아래와 같은 화면이 나오면 성공입니다!
+
+```
+╭──────── ⚽  FIFA 월드컵 2026 ─────────╮
+│  대한민국    2  :  1    독일           │
+│              ● 진행중                 │
+╰────────────────────────────────────────╯
+ 15:45  ⚽ 골!!! 이강인의 프리킥이 그대로 골문으로!
+```
 
 ---
 
@@ -58,6 +123,12 @@ python fifa_wc.py watch l48mfcapdDIm7Wv
 # 데모 먼저 구경하기
 python fifa_wc.py watch --demo
 ```
+
+> **다음에 다시 열 때는** 터미널에서 프로젝트 폴더로 이동한 뒤, 가상환경을 다시 활성화해야 합니다.
+> ```bash
+> cd fifa-world-cup-2026-cli
+> source .venv/bin/activate   # Windows는: .venv\Scripts\activate
+> ```
 
 ---
 
