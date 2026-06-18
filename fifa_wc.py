@@ -7,6 +7,7 @@ from typing import List, Optional, Set
 
 import click
 import requests
+from rich.markup import escape
 
 from fifa_cli.api import fetch_game, fetch_relay, fetch_schedule
 from fifa_cli.display import (
@@ -22,7 +23,7 @@ from fifa_cli.models import Match, MatchStatus, RelayEvent
 # ── 공통 오류 처리 ──────────────────────────────────────────────────────────
 
 def _handle_api_error(e: Exception) -> None:
-    console.print(f"\n[red]API 오류:[/red] {e}")
+    console.print(f"\n[red]API 오류:[/red] {escape(str(e))}")
     console.print(
         "[dim]네이버 스포츠 API에 접근할 수 없습니다.\n"
         "  • 네트워크 연결 확인\n"
@@ -56,7 +57,7 @@ def cmd_list(date: Optional[str]) -> None:
     """경기 일정 목록 보기"""
     target = date or datetime.now().strftime("%Y%m%d")
     fmt = f"{target[:4]}-{target[4:6]}-{target[6:]}"
-    console.print(f"\n[dim]  {fmt} 경기 일정 조회 중...[/dim]\n")
+    console.print(f"\n[dim]  {escape(fmt)} 경기 일정 조회 중...[/dim]\n")
 
     try:
         matches = fetch_schedule(target)
@@ -65,7 +66,7 @@ def cmd_list(date: Optional[str]) -> None:
         sys.exit(1)
 
     if not matches:
-        console.print(f"[yellow]  {fmt}에 예정된 경기가 없습니다.[/yellow]\n")
+        console.print(f"[yellow]  {escape(fmt)}에 예정된 경기가 없습니다.[/yellow]\n")
         return
 
     console.print(render_match_list(matches))
@@ -111,7 +112,7 @@ def cmd_live() -> None:
 
 @cli.command("watch")
 @click.argument("game_id", required=False, default=None)
-@click.option("--refresh", "-r", default=15, show_default=True, help="새로고침 간격 (초)")
+@click.option("--refresh", "-r", default=15, show_default=True, type=click.IntRange(min=1), help="새로고침 간격 (초)")
 @click.option("--demo", is_flag=True, default=False, help="데모 모드 (모의 경기 데이터)")
 def cmd_watch(game_id: Optional[str], refresh: int, demo: bool) -> None:
     """문자중계 보기
@@ -130,7 +131,7 @@ def cmd_watch(game_id: Optional[str], refresh: int, demo: bool) -> None:
         console.print("[dim]  목록: python fifa_wc.py list[/dim]\n")
         sys.exit(1)
 
-    console.print(f"\n[cyan]  경기 ID:[/cyan] {game_id}")
+    console.print(f"\n[cyan]  경기 ID:[/cyan] {escape(game_id)}")
     console.print(f"[dim]  {refresh}초 자동 새로고침  |  Ctrl+C 종료[/dim]\n")
 
     match: Optional[Match] = None
@@ -157,7 +158,7 @@ def cmd_watch(game_id: Optional[str], refresh: int, demo: bool) -> None:
                 console.print(render_event(e))
             console.rule("[dim]실시간[/dim]", style="dim green")
     except requests.RequestException as e:
-        console.print(f"[red]  초기 중계 로드 실패:[/red] {e}\n")
+        console.print(f"[red]  초기 중계 로드 실패:[/red] {escape(str(e))}\n")
 
     try:
         while True:
@@ -186,7 +187,7 @@ def cmd_watch(game_id: Optional[str], refresh: int, demo: bool) -> None:
                     console.print(render_refresh_line())
 
             except requests.RequestException as e:
-                console.print(f"[dim red]  새로고침 실패: {e}[/dim red]")
+                console.print(f"[dim red]  새로고침 실패: {escape(str(e))}[/dim red]")
 
             if match and match.status == MatchStatus.FINAL:
                 console.print("\n[bold]  경기가 종료되었습니다. 수고하셨습니다! ⚽[/bold]\n")

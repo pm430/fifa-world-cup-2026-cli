@@ -1,13 +1,24 @@
+import re
 from datetime import datetime
 from typing import List
 
 from rich import box
 from rich.console import Console
+from rich.markup import escape
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
 from .models import EventType, Match, MatchStatus, RelayEvent
+
+# CSI sequences (\x1b[...m), OSC sequences (\x1b]...\x07 or \x1b]...\x1b\\), other C1
+_ANSI_RE = re.compile(
+    r"\x1b(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1b\\))"
+)
+
+
+def _strip_ansi(text: str) -> str:
+    return _ANSI_RE.sub("", text)
 
 console = Console()
 
@@ -81,10 +92,10 @@ def render_match_list(matches: List[Match]) -> Table:
             str(i),
             _STATUS_LABELS.get(m.status, str(m.status)),
             m.time or "—",
-            m.home.name,
+            escape(m.home.name),
             score_str,
-            m.away.name,
-            m.game_id,
+            escape(m.away.name),
+            escape(m.game_id),
         )
     return table
 
@@ -105,7 +116,7 @@ def render_score_header(match: Match) -> Panel:
 
     body.append(f"\n\n{_STATUS_TEXT.get(match.status, '')}\n", style="dim")
 
-    subtitle = f"[dim]{match.stage}[/dim]" if match.stage else None
+    subtitle = f"[dim]{escape(match.stage)}[/dim]" if match.stage else None
     return Panel(
         body,
         title="[bold cyan]⚽  FIFA 월드컵 2026[/bold cyan]",
@@ -123,7 +134,7 @@ def render_event(event: RelayEvent) -> Text:
     t = Text()
     t.append(f" {time_col}  ", style="dim")
     t.append(f"{icon} ")
-    t.append(event.text, style=style)
+    t.append(_strip_ansi(event.text), style=style)
     return t
 
 

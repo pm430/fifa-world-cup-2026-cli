@@ -83,7 +83,7 @@ def fetch_schedule(date: Optional[str] = None) -> List[Match]:
     data = resp.json()
 
     matches: List[Match] = []
-    for g in data.get("result", {}).get("games", []):
+    for g in (data.get("result") or {}).get("games", []):
         if g.get("categoryId") != "worldcup":
             continue
         game_date = g.get("gameDate", "").replace("-", "")
