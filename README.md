@@ -113,7 +113,10 @@ python fifa_wc.py watch --demo
 ## 사용법
 
 ```bash
-# 오늘 경기 일정
+# 문자중계 시작 — 경기 목록이 뜨고 번호로 선택
+python fifa_wc.py watch
+
+# 오늘 경기 일정만 보기
 python fifa_wc.py list
 
 # 특정 날짜 경기
@@ -121,9 +124,6 @@ python fifa_wc.py list -d 20260626
 
 # 지금 진행 중인 경기
 python fifa_wc.py live
-
-# 문자중계 시작 (경기 ID는 list 명령으로 확인)
-python fifa_wc.py watch l48mfcapdDIm7Wv
 
 # 데모 먼저 구경하기
 python fifa_wc.py watch --demo
@@ -141,12 +141,13 @@ python fifa_wc.py watch --demo
 
 | 명령어 | 설명 |
 |---|---|
+| `watch` | 오늘 경기 목록에서 번호로 선택 후 문자중계 시작 |
+| `watch <경기ID>` | 특정 경기 ID로 바로 문자중계 시작 |
+| `watch --refresh 30` | 새로고침 간격 설정 (기본: 15초) |
+| `watch --demo` | 라이브 경기 없이 데모 화면 보기 |
 | `list` | 오늘 월드컵 경기 일정 보기 |
 | `list -d YYYYMMDD` | 특정 날짜 경기 일정 |
 | `live` | 현재 진행 중인 경기 확인 |
-| `watch <경기ID>` | 문자중계 시작 |
-| `watch --refresh 30` | 새로고침 간격 설정 (기본: 15초) |
-| `watch --demo` | 라이브 경기 없이 데모 화면 보기 |
 
 ---
 

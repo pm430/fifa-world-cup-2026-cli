@@ -115,6 +115,39 @@ def cmd_live() -> None:
     )
 
 
+# ── 경기 선택 ────────────────────────────────────────────────────────────────
+
+def _pick_match() -> Optional[str]:
+    """오늘 경기 목록을 보여주고 번호로 선택하게 한다. 선택된 game_id 반환."""
+    today = datetime.now().strftime("%Y%m%d")
+    console.print("\n[dim]  오늘 경기 목록을 불러오는 중...[/dim]\n")
+
+    try:
+        matches = fetch_schedule(today)
+    except requests.RequestException as e:
+        _handle_api_error(e)
+        return None
+
+    if not matches:
+        console.print("[yellow]  오늘 예정된 경기가 없습니다.[/yellow]\n")
+        return None
+
+    console.print(render_match_list(matches))
+
+    console.print()
+    while True:
+        raw = console.input("[cyan]  번호를 입력하세요[/cyan] [dim](1–{n}, q=종료)[/dim]: ".format(n=len(matches)))
+        if raw.strip().lower() == "q":
+            return None
+        try:
+            idx = int(raw.strip())
+            if 1 <= idx <= len(matches):
+                return matches[idx - 1].game_id
+        except ValueError:
+            pass
+        console.print(f"[red]  1~{len(matches)} 사이의 숫자를 입력하세요.[/red]")
+
+
 # ── watch ───────────────────────────────────────────────────────────────────
 
 @cli.command("watch")
@@ -125,7 +158,7 @@ def cmd_watch(game_id: Optional[str], refresh: int, demo: bool) -> None:
     """문자중계 보기
 
     \b
-    GAME_ID: 경기 고유 번호 (list 명령으로 확인)
+    GAME_ID 없이 실행하면 오늘 경기 목록에서 번호로 선택할 수 있습니다.
     데모:    python fifa_wc.py watch --demo
     """
     if demo:
@@ -133,10 +166,9 @@ def cmd_watch(game_id: Optional[str], refresh: int, demo: bool) -> None:
         return
 
     if not game_id:
-        console.print("[red]오류:[/red] 경기 ID를 입력하세요.\n")
-        console.print("[dim]  예시: python fifa_wc.py watch 2026WFOOTBALL001[/dim]")
-        console.print("[dim]  목록: python fifa_wc.py list[/dim]\n")
-        sys.exit(1)
+        game_id = _pick_match()
+        if not game_id:
+            sys.exit(1)
 
     console.print(f"\n[cyan]  경기 ID:[/cyan] {escape(game_id)}")
     console.print(f"[dim]  {refresh}초 자동 새로고침  |  Ctrl+C 종료[/dim]\n")
