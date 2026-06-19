@@ -2,8 +2,15 @@
 """FIFA 월드컵 2026 문자중계 CLI — 직장인을 위한 조용한 터미널 관람"""
 import sys
 import time
+
+# Windows cp949 등 비UTF-8 환경에서 이모지 출력 시 UnicodeEncodeError 방지
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
 from datetime import datetime
-from typing import List, Optional, Set
+from typing import Optional, Set
 
 import click
 import requests
@@ -17,7 +24,7 @@ from fifa_cli.display import (
     render_refresh_line,
     render_score_header,
 )
-from fifa_cli.models import Match, MatchStatus, RelayEvent
+from fifa_cli.models import Match, MatchStatus
 
 
 # ── 공통 오류 처리 ──────────────────────────────────────────────────────────
@@ -136,7 +143,6 @@ def cmd_watch(game_id: Optional[str], refresh: int, demo: bool) -> None:
 
     match: Optional[Match] = None
     seen: Set[str] = set()
-    events: List[RelayEvent] = []
 
     # 초기 경기 정보 로드
     try:
@@ -151,12 +157,17 @@ def cmd_watch(game_id: Optional[str], refresh: int, demo: bool) -> None:
         initial = fetch_relay(game_id)
         for e in initial:
             seen.add(e.event_id)
-            events.append(e)
-        if events:
+        if initial:
             console.rule("[dim]이전 중계[/dim]", style="dim")
-            for e in events:
+            for e in initial:
                 console.print(render_event(e))
-            console.rule("[dim]실시간[/dim]", style="dim green")
+        else:
+            console.print(
+                "[dim]  문자중계 데이터가 아직 없습니다.\n"
+                "  네이버 스포츠가 이 경기의 실시간 중계를 제공하지 않거나,\n"
+                "  경기 시작 전일 수 있습니다. 자동으로 계속 확인합니다.[/dim]\n"
+            )
+        console.rule("[dim]실시간[/dim]", style="dim green")
     except requests.RequestException as e:
         console.print(f"[red]  초기 중계 로드 실패:[/red] {escape(str(e))}\n")
 
@@ -179,7 +190,6 @@ def cmd_watch(game_id: Optional[str], refresh: int, demo: bool) -> None:
                 for e in new_events:
                     if e.event_id not in seen:
                         seen.add(e.event_id)
-                        events.append(e)
                         console.print(render_event(e))
                         added += 1
 
@@ -213,9 +223,9 @@ def _run_demo(refresh: int) -> None:
     console.rule("[dim]실시간[/dim]", style="dim green")
 
     # 마지막 3개 이벤트를 refresh 간격으로 하나씩 출력
-    remaining = list(DEMO_EVENTS[-3:])
+    remaining = DEMO_EVENTS[-3:]
     try:
-        for i, e in enumerate(remaining):
+        for e in remaining:
             time.sleep(min(refresh, 5))
             console.print(render_event(e))
             console.print(render_refresh_line())

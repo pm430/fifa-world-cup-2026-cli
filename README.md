@@ -78,6 +78,11 @@ pip install -r requirements.txt
 ```
 
 > `git` 명령어가 없다는 오류가 나오면 → [git-scm.com](https://git-scm.com/downloads) 에서 Git 설치 후 다시 시도하세요.
+>
+> `python` 명령어 실행 시 Microsoft Store로 연결되거나 오류가 나면 `py` 런처를 대신 사용하세요.
+> ```cmd
+> py -m venv .venv
+> ```
 
 설치가 끝나면 이런 메시지가 보입니다.
 

@@ -78,7 +78,7 @@ def render_match_list(matches: List[Match]) -> Table:
     table.add_column("홈팀", min_width=12, justify="right")
     table.add_column("스코어", width=9, justify="center")
     table.add_column("원정팀", min_width=12, justify="left")
-    table.add_column("경기ID", style="dim cyan", width=22)
+    table.add_column("경기ID", style="dim cyan", min_width=16, no_wrap=True)
 
     for i, m in enumerate(matches, 1):
         if m.status == MatchStatus.BEFORE:
